@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using WebLoginDemo.Models.database
+@inject SignInManager<IdentityUserModel> SignInManager
+@inject UserManager<IdentityUserModel> UserManager
+@{
+	Layout = null;
+}
+<head>
+    <title>管理员页面</title>
+</head>
+<body>
+    <header>
+        <h2>欢迎管理员 @User.Identity?.Name</h2>
+        <hr/>
+    </header>
+    <div>
+        <h3>邀请码列表</h3>
+    </div>
+</body>

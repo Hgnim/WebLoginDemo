@@ -1,0 +1,5 @@
+{
+  "Source": "Style/scss",
+  "Target": "wwwroot/css",
+  "Arguments": "--style compressed"
+}
