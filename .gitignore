@@ -5,7 +5,7 @@
 */appsettings*.json
 *.csproj.user
 */.config
-*/wwwroot/js
-*/wwwroot/css
+*/wwwroot/dist
+node_modules
 
 */*_data

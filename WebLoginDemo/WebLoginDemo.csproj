@@ -18,4 +18,8 @@
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
 
+  <Target Name="WebpackBuild" BeforeTargets="Build">
+  	<Exec Command="npm run build" />
+  </Target>
+
 </Project>
