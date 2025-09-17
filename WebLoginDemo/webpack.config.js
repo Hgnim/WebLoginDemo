@@ -16,7 +16,10 @@ module.exports = {
     },
     resolve: {
         //设置类型可以作为模块被引用
-        extensions: [".ts", ".tsx", ".js"]
+        extensions: [".ts", ".tsx", ".js"],
+        alias: {
+            "@": path.resolve(__dirname, "."),
+        },
     },
     module: {
         rules: [
@@ -61,7 +64,14 @@ module.exports = {
                     ],
                 },
             }), // 压缩css
-            new TerserPlugin(), // 压缩js
+            new TerserPlugin({
+                terserOptions: {
+                    format: {
+                        comments: false,      // 压缩时删除所有注释
+                    },
+                },
+                extractComments: false,   // 不提取 *.LICENSE.txt
+            }), // 压缩js
         ],
     },
 };

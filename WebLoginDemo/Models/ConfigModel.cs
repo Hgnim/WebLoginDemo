@@ -118,31 +118,6 @@ namespace WebLoginDemo.Models {
 				set => database = value;
 				get => database;
 			}
-
-			public class AdminC {
-				private bool enable = true;
-				public bool Enable {
-					set => enable = value;
-					get => enable;
-				}
-
-				private string userName = "admin";
-				public string UserName {
-					set => userName = value;
-					get => userName;
-				}
-
-				private string password = "0123";
-				public string Password {
-					set => password = value;
-					get => password;
-				}
-			}
-			private AdminC admin = new();
-			public AdminC Admin {
-				set => admin = value;
-				get => admin;
-			}
 		}
 		private WebsiteC website = new();
 		public WebsiteC Website {

@@ -13,6 +13,6 @@ namespace WebLoginDemo.Models.database {
 
 		public bool Used { get; set; }//是否已使用
 		public DateTime? ExpireAt { get; set; }//过期时间
-		//public string? Role { get; set; }//预置角色
+		public string? Role { get; set; }//预置角色
 	}
 }

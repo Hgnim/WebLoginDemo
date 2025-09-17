@@ -24,5 +24,10 @@
         <input asp-for="Input.ConfirmPassword" autocomplete="new-password" aria-required="true" placeholder="再次输入密码" />        
         <span asp-validation-for="Input.ConfirmPassword"></span>
     </div>
+    <div>
+        <label asp-for="Input.InviteCode">邀请码</label>
+        <input asp-for="Input.InviteCode" aria-required="true" placeholder="请输入邀请码" />
+		<span asp-validation-for="Input.InviteCode"></span>
+    </div>
     <button id="registerSubmit" type="submit">注册</button>
 </form>

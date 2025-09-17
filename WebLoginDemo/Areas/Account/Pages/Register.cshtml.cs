@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebLoginDemo.Areas.Account.Pages {
 	public class RegisterModel : PageModel {
@@ -37,23 +38,30 @@ namespace WebLoginDemo.Areas.Account.Pages {
             [Display(Name = "确认密码")]
             [Compare("Password", ErrorMessage = "密码和确认密码不一致。")]
             public string? ConfirmPassword { get; set; }
-        }
+
+			[Required(ErrorMessage = "邀请码不能为空")]
+			[Display(Name = "邀请码")]
+			public string InviteCode { get; set; } = default!;
+		}
 
 		//TUser变为IdentityUserModel，因为不能使用泛型类
 		private readonly SignInManager<IdentityUserModel> _signInManager;
 		private readonly UserManager<IdentityUserModel> _userManager;
 		private readonly IUserStore<IdentityUserModel> _userStore;
 		private readonly ILogger<RegisterModel> _logger;
+		private readonly ServerDbContext _db;
 
 		public RegisterModel(
 			UserManager<IdentityUserModel> userManager,
 			IUserStore<IdentityUserModel> userStore,
 			SignInManager<IdentityUserModel> signInManager,
-			ILogger<RegisterModel> logger) {
+			ILogger<RegisterModel> logger,
+			ServerDbContext db) {
 			_userManager = userManager;
 			_userStore = userStore;
 			_signInManager = signInManager;
 			_logger = logger;
+			_db = db;
 		}
 
 		public async Task OnGetAsync([StringSyntax(StringSyntaxAttribute.Uri)] string? returnUrl = null) {
@@ -62,6 +70,15 @@ namespace WebLoginDemo.Areas.Account.Pages {
 		}
 
         public async Task<IActionResult> OnPostAsync([StringSyntax(StringSyntaxAttribute.Uri)] string? returnUrl = null){
+			var iCode = await _db.InviteCode.FirstOrDefaultAsync(c => c.Code == Input.InviteCode);
+
+			if (iCode == null || iCode.Used || (iCode.ExpireAt.HasValue && iCode.ExpireAt < DateTime.UtcNow)) {
+				ModelState.AddModelError(string.Empty, "邀请码无效或已过期");
+				return Page();
+			}
+			iCode.Used = true;
+			await _db.SaveChangesAsync();
+
 			returnUrl ??= Url.Content("~/");
 			ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 			if (ModelState.IsValid) {
@@ -71,7 +88,10 @@ namespace WebLoginDemo.Areas.Account.Pages {
 				var result = await _userManager.CreateAsync(user, Input.Password);
 
 				if (result.Succeeded) {
-					await _userManager.AddToRoleAsync(user, "User");
+					if (!string.IsNullOrEmpty(iCode.Role))
+						await _userManager.AddToRoleAsync(user, iCode.Role);
+					else
+						await _userManager.AddToRoleAsync(user, "User");
 					_logger.LogInformation(LoggerEventIds.UserCreated, "User created a new account with password.");
 					Console.WriteLine($"新用户注册。用户名：{user.UserName}");
 
